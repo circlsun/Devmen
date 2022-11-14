@@ -1,4 +1,26 @@
-pattern = """Привет, %friend_name%! %my_name% приглашает тебя на сайт %website%!
+import smtplib
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+mail_login = os.getenv("MAIL_LOGIN")
+mail_pass = os.getenv("MAIL_PASSWORD")
+
+website = 'https://dvmn.org/referrals/ryngw37O2sVIbCI4i09Fw18Q7rD1acLYzh9uKv8B/'
+friend_name = "Марк"
+my_name = "Андрей"
+my_email = "circlsun.matveev@yandex.ru"
+friend_email = "andmatwey@yandex.ru"
+subject = "Приглашение!"
+сontent_type = 'text/plain; charset="UTF-8";'
+
+letter = """\
+From: {} 
+To: {}
+Subject: {}
+Content-Type: {}
+
+Привет, %friend_name%! %my_name% приглашает тебя на сайт %website%!
 
 %website% — это новая версия онлайн-курса по программированию. 
 Изучаем Python и не только. Решаем задачи. Получаем ревью от преподавателя. 
@@ -15,29 +37,13 @@ pattern = """Привет, %friend_name%! %my_name% приглашает теб�
 Регистрируйся → %website%  
 На курсы, которые еще не вышли, можно подписаться и получить уведомление о релизе сразу на имейл.
 """
-website = 'https://dvmn.org/referrals/ryngw37O2sVIbCI4i09Fw18Q7rD1acLYzh9uKv8B/'
-friend_name = "Марк"
-my_name = "Андрей"
-my_email = "circlsun.matveev@yandex.ru"
-friend_email = "petr@yandex.ru"
-subject = "Приглашение!"
-h1_сontent_type = 'text/plain'
-h2_сontent_type = "UTF-8"
+letter = letter.format(my_email, friend_email, subject, сontent_type)
+letter = letter.replace('%website%', website).replace('%friend_name%', friend_name).replace('%my_name%', my_name)
+letter = letter.encode("UTF-8")
 
-# From: ivan@yandex.ru
-# To: petr@yandex.ru
-# Subject: Приглашение!
-# Content-Type: text/plain; charset="UTF-8";
-
-mail_title = (f"From: {my_email}\n" 
-              f"To: {friend_email}\n"
-              f"Subject: {subject}\n"
-              f"Content-Type: {h1_сontent_type}; {h2_сontent_type};"
-)
-letter = pattern.replace('%website%', website).replace('%friend_name%', friend_name).replace('%my_name%', my_name)
-
-#print(mail_title)
-#print()
-print(mail_title, letter, sep='\n\n')
+server = smtplib.SMTP_SSL('smtp.yandex.ru:465')
+server.login(mail_login, mail_pass)
+server.sendmail(my_email, friend_email, letter)
+server.quit()
 
 
