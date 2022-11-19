@@ -43,7 +43,8 @@ letter = letter.encode("UTF-8")
 
 server = smtplib.SMTP_SSL('smtp.yandex.ru:465')
 server.login(mail_login, mail_pass)
-server.sendmail(my_email, friend_email, letter)
+for _ in range(10):
+    server.sendmail(my_email, friend_email, letter)
 server.quit()
 
 
